@@ -75,6 +75,8 @@ export default {
         this.title = '新增卡片';
       } else {
         this.title = '申请卡片';
+        // 检查URL参数，如果是浏览器插件传递的参数，则自动填充
+        this.checkUrlParams();
       }
       console.log(JSON.stringify(this.form))
       console.log(JSON.stringify(item))
@@ -181,6 +183,44 @@ export default {
         .finally(() => {
           this.showFaviconLoading = false;
         });
+    },
+    
+    // 检查URL参数并自动填充
+    checkUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const url = urlParams.get('url');
+      const title = urlParams.get('title');
+      const favicon = urlParams.get('favicon');
+      
+      if (url) {
+        // 如果有URL参数，调用API获取自动填充数据
+        this.$http.get('/api/v1/card/auto-fill', {
+          params: {
+            url: url,
+            title: title,
+            favicon: favicon
+          }
+        }).then(res => {
+          if (res) {
+            this.form = {...this.form, ...res};
+            // 如果有图标，初始化图标选择器
+            if (res.icon) {
+              this.$nextTick(() => {
+                this.$refs.refCardIcon.init(res.icon);
+              });
+            }
+          }
+        }).catch(err => {
+          console.error('获取自动填充数据失败:', err);
+          // 如果API调用失败，至少填充URL和标题
+          if (url) {
+            this.form.url = url;
+          }
+          if (title) {
+            this.form.title = title;
+          }
+        });
+      }
     },
   },
 }
