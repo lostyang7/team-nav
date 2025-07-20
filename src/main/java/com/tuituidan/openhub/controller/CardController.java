@@ -150,4 +150,38 @@ public class CardController {
     public ResponseEntity<String> cardDynamicContent(@PathVariable String id) {
         return ResponseEntity.ok(cardService.cardDynamicContent(id));
     }
+
+    /**
+     * 浏览器插件获取页面信息并自动填充卡片数据
+     *
+     * @param url 页面URL
+     * @param title 页面标题
+     * @param favicon 页面图标
+     * @param description 页面描述
+     * @param content 页面内容
+     * @return CardDto 预填充的卡片数据
+     */
+    @GetMapping("/card/auto-fill")
+    public ResponseEntity<CardDto> getAutoFillCardData(
+            @RequestParam("url") String url,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "favicon", required = false) String favicon,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "content", required = false) String content) {
+        
+        CardDto cardDto = new CardDto();
+        cardDto.setType("default");
+        cardDto.setTitle(title != null ? title : "新网页");
+        cardDto.setUrl(url);
+        cardDto.setContent(description != null ? description : content);
+        
+        // 如果有favicon，设置图标
+        if (favicon != null && !favicon.isEmpty()) {
+            com.tuituidan.openhub.bean.dto.CardIconDto iconDto = new com.tuituidan.openhub.bean.dto.CardIconDto();
+            iconDto.setSrc(favicon);
+            cardDto.setIcon(iconDto);
+        }
+        
+        return ResponseEntity.ok(cardDto);
+    }
 }
