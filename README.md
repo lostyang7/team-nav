@@ -93,9 +93,60 @@ Springboot、SpringDataJpa、SpringSecurity、h2database
 
 ## 部署说明
 
-通过常规maven命令构建，打包执行命令`mvn clean package -Dmaven.npm.skip=false`，会自动将前端构建到后端的jar包中，这样整个服务就一个jar包（当然如果想前后端分离部署也是可以的，这里不再赘述），再无其他依赖服务，仅需要jdk环境即可启动。
+### 🚀 快速构建（推荐）
+
+本项目支持前后端一体化打包，生成单个可执行jar包，仅需JDK环境即可启动。
+
+#### 使用构建脚本（最简单）
+```bash
+# Linux/macOS
+chmod +x build.sh
+./build.sh
+
+# Windows
+build.bat
+```
+
+#### 手动构建
+```bash
+# 构建前后端一体化jar包
+mvn clean package -Dmaven.npm.skip=false
+```
+
+构建完成后，在`target/`目录下会生成`team-nav.jar`文件，直接运行：
+```bash
+java -jar target/team-nav.jar
+```
+
+### 📦 构建特性
+
+- ✅ **前后端一体化**：前端代码自动构建并打包到jar中
+- ✅ **单文件部署**：只需一个jar文件即可运行
+- ✅ **零依赖**：仅需JDK环境，无需Node.js、npm等
+- ✅ **自动安装**：构建时自动下载安装Node.js和npm
+- ✅ **多数据库支持**：支持H2、MySQL、PostgreSQL
+
+### 🔧 自定义启动
+
+```bash
+# 使用MySQL数据库
+java -jar target/team-nav.jar --spring.profiles.active=mysql
+
+# 指定端口
+java -jar target/team-nav.jar --server.port=8082
+
+# 组合配置
+java -jar target/team-nav.jar \
+  --spring.profiles.active=mysql \
+  --server.port=8082 \
+  --spring.datasource.url=jdbc:mysql://localhost:3306/team_nav
+```
 
 > 如果已经部署了1.X版本的也是直接用2.0版本的jar启动，或者重新拉取镜像启动即可，数据会自动矫正
+
+### 📚 详细构建说明
+
+更多构建相关的详细信息，请参考：[构建指南](./BUILD_GUIDE.md)
 
 #### 方式一：手动部署
 
